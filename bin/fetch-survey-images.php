@@ -8,6 +8,7 @@
  *   php bin/fetch-survey-images.php            # fetch missing images (safe to re-run / resume)
  *   php bin/fetch-survey-images.php --force    # re-download everything
  *   php bin/fetch-survey-images.php --only=123 # one star (HYG id)
+ *   php bin/fetch-survey-images.php --recheck  # re-test existing images; refetch any with a masked/blank core
  *   options: --delay=1.0 (seconds between requests) --limit=N --prune (delete images of stars no longer in the DB)
  */
 
@@ -15,16 +16,20 @@ declare(strict_types=1);
 
 require __DIR__ . '/../vendor/autoload.php';
 
+use BirthStars\ImageQuality;
 use BirthStars\SurveyImages;
 
 $root = dirname(__DIR__);
 $dir = $root . '/public/assets/survey';
-$opts = getopt('', ['force', 'only:', 'delay:', 'limit:', 'prune', 'quality:']);
+$opts = getopt('', ['force', 'only:', 'delay:', 'limit:', 'prune', 'quality:', 'recheck']);
 $delay = isset($opts['delay']) ? max(0.2, (float) $opts['delay']) : 1.0;
 $limit = isset($opts['limit']) ? (int) $opts['limit'] : PHP_INT_MAX;
 $quality = isset($opts['quality']) ? (int) $opts['quality'] : 80;
 $force = isset($opts['force']);
 
+if (!ImageQuality::available()) {
+    fwrite(STDERR, "Warning: PHP GD extension missing; images cannot be quality-checked or recompressed.\n");
+}
 if (!is_dir($dir) && !mkdir($dir, 0775, true)) {
     fwrite(STDERR, "Cannot create $dir\n");
     exit(1);
@@ -79,31 +84,6 @@ $download = static function (string $url) use ($delay): ?string {
     return null;
 };
 
-/** Mean brightness 0-255 (sampled), or null if GD is unavailable. */
-$brightness = static function (string $jpeg): ?float {
-    if (!function_exists('imagecreatefromstring')) {
-        return null;
-    }
-    $im = @imagecreatefromstring($jpeg);
-    if ($im === false) {
-        return 0.0;
-    }
-    $sum = 0;
-    $n = 0;
-    $w = imagesx($im);
-    $h = imagesy($im);
-    for ($y = 5; $y < $h; $y += 20) {
-        for ($x = 5; $x < $w; $x += 20) {
-            $c = imagecolorat($im, $x, $y);
-            $sum += (($c >> 16) & 255) + (($c >> 8) & 255) + ($c & 255);
-            $n += 3;
-        }
-    }
-    imagedestroy($im);
-
-    return $n > 0 ? $sum / $n : 0.0;
-};
-
 $recompress = static function (string $jpeg) use ($quality): string {
     if (!function_exists('imagejpeg') || ($im = @imagecreatefromstring($jpeg)) === false) {
         return $jpeg;
@@ -119,25 +99,34 @@ $recompress = static function (string $jpeg) use ($quality): string {
 
 $ok = $skipped = $failed = 0;
 $failures = [];
+$imperfect = [];
 $valid = [];
 foreach ($stars as $s) {
     $id = (string) $s['hyg_id'];
     $valid[$id] = true;
     $file = "$dir/$id.jpg";
     if (!$force && isset($images[$id]) && is_file($file)) {
-        $skipped++;
-        continue;
+        $recheck = isset($opts['recheck']) && ImageQuality::available() && ImageQuality::assessFile($file)['issues'] !== [];
+        if (!$recheck) {
+            $skipped++;
+            continue;
+        }
+        fwrite(STDOUT, "[$id] existing image failed the quality check, refetching\n");
     }
+    // Don't re-request a survey we already know gives a bad image for this star.
+    $skipHips = (!$force && isset($images[$id]['hips']) && is_file($file)) ? $images[$id]['hips'] : null;
     if ($ok + $failed >= $limit) {
         break;
     }
     $raDeg = (float) $s['ra'] * 15.0;
     $dec = (float) $s['dec'];
     $fov = SurveyImages::fovFor((float) $s['mag']);
-    $candidates = array_values(array_unique([SurveyImages::surveyFor($dec), 'CDS/P/DSS2/color']));
-    $saved = false;
-    foreach ($candidates as $hips) {
-        [$epochYear] = [SurveyImages::SURVEYS[$hips][2]];
+    $best = null;
+    foreach (SurveyImages::candidatesFor($dec) as $hips) {
+        if ($hips === $skipHips) {
+            continue;
+        }
+        $epochYear = SurveyImages::SURVEYS[$hips][2];
         [$ra, $de] = SurveyImages::positionAt($raDeg, $dec, $s['pmra'] !== null ? (float) $s['pmra'] : null, $s['pmdec'] !== null ? (float) $s['pmdec'] : null, $epochYear);
         $url = SurveyImages::url($hips, $ra, $de, $fov);
         fwrite(STDOUT, sprintf("[%s] %s via %s ... ", $id, $s['proper'] ?? '', $hips));
@@ -147,12 +136,21 @@ foreach ($stars as $s) {
             fwrite(STDOUT, "failed\n");
             continue;
         }
-        $b = $brightness($jpeg);
-        if ($b !== null && $b < 2.0) {
-            fwrite(STDOUT, "blank (no coverage), trying next survey\n");
-            continue;
+        $q = ImageQuality::available() ? ImageQuality::assess($jpeg) : ['issues' => [], 'metrics' => []];
+        // Lower is better: any issue costs a lot, then the size of the masked core.
+        $score = count($q['issues']) * 1000 + (int) ($q['metrics']['core_hole_pixels'] ?? 0);
+        fwrite(STDOUT, $q['issues'] ? 'problem: ' . implode(',', $q['issues']) . "\n" : "good\n");
+        if ($best === null || $score < $best['score']) {
+            $best = ['score' => $score, 'jpeg' => $jpeg, 'hips' => $hips, 'url' => $url, 'ra' => $ra, 'dec' => $de, 'issues' => $q['issues']];
         }
-        $jpeg = $recompress($jpeg);
+        if ($q['issues'] === []) {
+            break;
+        }
+    }
+    $saved = false;
+    if ($best !== null) {
+        $hips = $best['hips'];
+        $jpeg = $recompress($best['jpeg']);
         file_put_contents("$file.tmp", $jpeg);
         rename("$file.tmp", $file);
         $images[$id] = [
@@ -161,17 +159,19 @@ foreach ($stars as $s) {
             'survey' => SurveyImages::SURVEYS[$hips][0],
             'credit' => SurveyImages::SURVEYS[$hips][1],
             'fov_deg' => $fov,
-            'ra_deg' => round($ra, 6),
-            'dec_deg' => round($de, 6),
+            'ra_deg' => round($best['ra'], 6),
+            'dec_deg' => round($best['dec'], 6),
             'epoch' => SurveyImages::SURVEYS[$hips][2],
-            'source_url' => $url,
+            'source_url' => $best['url'],
             'bytes' => strlen($jpeg),
+            'quality_issues' => $best['issues'],
             'fetched_at' => gmdate('c'),
         ];
         $save();
-        fwrite(STDOUT, sprintf("ok (%d KB)\n", strlen($jpeg) / 1024));
+        if ($best['issues'] !== []) {
+            $imperfect[] = $id;
+        }
         $saved = true;
-        break;
     }
     if ($saved) {
         $ok++;
@@ -196,11 +196,13 @@ foreach (glob("$dir/*.jpg") ?: [] as $f) {
     $total += filesize($f);
 }
 fwrite(STDOUT, sprintf(
-    "Done: %d downloaded, %d already present, %d failed%s. %d images, %.1f MB total.\n",
+    "Done: %d downloaded, %d already present, %d failed%s, %d kept with quality issues%s. %d images, %.1f MB total.\n",
     $ok,
     $skipped,
     $failed,
     $failures ? ' (HYG ids: ' . implode(', ', $failures) . ')' : '',
+    count($imperfect),
+    $imperfect ? ' (HYG ids: ' . implode(', ', $imperfect) . ')' : '',
     count($images),
     $total / 1048576,
 ));

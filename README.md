@@ -117,13 +117,18 @@ To move to a newer release, update `HYG_COMMIT`, `HYG_FILE` and `HYG_SHA256` in 
 `public/assets/survey/<hyg_id>.jpg` holds a real sky-survey photo of every possible birthday star. `public/assets/survey/manifest.json` records the survey, field of view, coordinates, source URL and credit for each one. The photos are bundled so the site works offline.
 
 Each photo is a 600×600 colour cutout from the [CDS hips2fits](https://alasky.cds.unistra.fr/hips-image-services/hips2fits) service:
-- **Survey:** Pan-STARRS DR1 colour (`CDS/P/PanSTARRS/DR1/color-z-zg-g`, taken from Haleakalā, Maui) wherever it covers the sky (Dec > −29°). DSS2 colour (`CDS/P/DSS2/color`) is used elsewhere, and also when a Pan-STARRS cutout comes back blank.
+- **Survey:** Pan-STARRS DR1 colour (`CDS/P/PanSTARRS/DR1/color-z-zg-g`, taken from Haleakalā, Maui) is tried first wherever it covers the sky (Dec > −29°). DSS2 colour (`CDS/P/DSS2/color`) is next, then 2MASS colour (`CDS/P/2MASS/color`, infrared).
+- **Automatic quality check** (`src/ImageQuality.php`, needs PHP's GD extension). Every cutout is tested, and the first survey that passes is used; if none passes, the least-bad one is kept and its problems are recorded in the manifest. The check rejects:
+  - a masked or saturated core: Pan-STARRS blanks the centre of bright stars, leaving a black or oddly coloured hole inside the glow;
+  - an almost blank frame;
+  - large empty no-data areas.
 - **Position:** centred on the star after applying its HYG proper motion to the survey epoch.
 - **Field of view:** 0.25°–1°, wider for brighter stars.
 - **Compression:** recompressed to JPEG quality 80 if PHP's GD extension is available.
 
 ```bash
 php bin/fetch-survey-images.php           # fetch missing images (resumable; ~1 request/s with retries)
+php bin/fetch-survey-images.php --recheck # re-test existing photos and replace any that fail the check
 php bin/fetch-survey-images.php --prune   # after a star-data refresh: also delete photos of stars no longer listed
 php bin/fetch-survey-images.php --force   # re-download everything
 ```
@@ -132,6 +137,7 @@ If a photo is missing, the result page just says so.
 **Credits:**
 - Pan-STARRS1 Surveys (PS1), Institute for Astronomy, University of Hawaiʻi. The PS1 data archive asks users to acknowledge the PS1 Surveys and its funders. See <https://panstarrs.stsci.edu/>.
 - Digitized Sky Survey, produced at STScI under US Government grant NAG W-2166, from photographic plates taken at Palomar Observatory (Caltech) and the UK Schmidt Telescope (AAO/ROE). The DSS may be reused for non-commercial and educational purposes with acknowledgement. See <https://archive.stsci.edu/dss/acknowledging.html>.
+- Two Micron All Sky Survey (2MASS), a joint project of UMass and IPAC/Caltech, funded by NASA and NSF (used only as a last fallback).
 - Cutouts provided by CDS, Strasbourg (hips2fits / HiPS, Fernique et al. 2015, A&A 578, A114).
 
 ## Constellation names and Hawaiian star names on the chart

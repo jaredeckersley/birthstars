@@ -41,6 +41,9 @@ final class App
         }
         $twig = Twig::create($root . '/templates', ['cache' => false, 'autoescape' => 'html', 'strict_variables' => false]);
         $twig->getEnvironment()->addGlobal('base', $config['base_path'] ?? '');
+        // Cache-busting token for CSS/JS so browsers never mix new HTML with old cached styles.
+        $assetFiles = [$root . '/public/assets/css/app.css', $root . '/public/assets/js/app.js', $root . '/public/assets/js/skychart.js'];
+        $twig->getEnvironment()->addGlobal('v', substr(md5(implode('|', array_map(static fn ($f) => is_file($f) ? (string) filemtime($f) . filesize($f) : '', $assetFiles))), 0, 10));
         // Hawaiian subtitle shown under the title. TODO: needs review by a native speaker before launch.
         $twig->getEnvironment()->addGlobal('subtitle_haw', $config['subtitle_haw'] ?? self::SUBTITLE_HAW);
         $app->add(TwigMiddleware::create($app, $twig));

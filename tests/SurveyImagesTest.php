@@ -30,6 +30,12 @@ final class SurveyImagesTest extends TestCase
         self::assertSame('CDS/P/DSS2/color', SurveyImages::surveyFor(-60.8));
     }
 
+    public function testFallbackOrder(): void
+    {
+        self::assertSame(['CDS/P/PanSTARRS/DR1/color-z-zg-g', 'CDS/P/DSS2/color', 'CDS/P/2MASS/color'], SurveyImages::candidatesFor(10.0));
+        self::assertSame(['CDS/P/DSS2/color', 'CDS/P/2MASS/color'], SurveyImages::candidatesFor(-50.0));
+    }
+
     public function testFieldOfViewGrowsForBrightStars(): void
     {
         self::assertSame(1.0, SurveyImages::fovFor(-1.44));

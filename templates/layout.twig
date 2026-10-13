@@ -6,11 +6,11 @@
 <title>{% block title %}Birthday Stars{% endblock %}</title>
 <meta name="description" content="Find the star whose light set off on its journey to Earth on the day you were born.">
 <link rel="icon" href="{{ base }}/assets/img/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="{{ base }}/assets/css/app.css">
-<script src="{{ base }}/assets/js/app.js" defer></script>
+<link rel="stylesheet" href="{{ base }}/assets/css/app.css?v={{ v }}">
+<script src="{{ base }}/assets/js/app.js?v={{ v }}" defer></script>
 {% block head %}{% endblock %}
 </head>
-<body class="{% if kiosk %}kiosk{% endif %} {% block bodyclass %}{% endblock %}" data-base="{{ base }}"{% if kiosk %} data-kiosk-home="{{ base }}/kiosk" data-kiosk-timeout="90"{% endif %}>
+<body class="{% if kiosk %}kiosk{% endif %} {% block bodyclass %}{% endblock %}" data-base="{{ base }}" data-v="{{ v }}"{% if kiosk %} data-kiosk-home="{{ base }}/kiosk" data-kiosk-timeout="90"{% endif %}>
 <canvas id="starfield" aria-hidden="true"></canvas>
 <a class="skip" href="#main">Skip to content</a>
 <header class="site-header noprint">

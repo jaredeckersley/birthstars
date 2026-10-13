@@ -149,7 +149,8 @@ h1 em, h2 em { color: var(--gold); font-style: normal; }
 .photo-frame { position: relative; border-radius: 16px; overflow: hidden; box-shadow: 0 0 0 2px rgba(127, 231, 255, .35), 0 0 50px rgba(127, 231, 255, .25); background: #000; }
 .photo-frame img { display: block; width: 100%; height: auto; }
 .photo-mark { position: absolute; inset: 0; width: 100%; height: 100%; }
-.photo-ring { fill: none; stroke: #ff8bd1; stroke-width: .8; transform-origin: 50px 50px; filter: drop-shadow(0 0 1.5px rgba(255, 139, 209, .9)); animation: ring 2.4s ease-in-out infinite; }
+.photo-ring, .photo-ring * { fill: none !important; }
+.photo-ring { stroke: #ff8bd1; stroke-width: .8; transform-origin: 50px 50px; filter: drop-shadow(0 0 1.5px rgba(255, 139, 209, .9)); animation: ring 2.4s ease-in-out infinite; }
 .photo-label { position: absolute; left: 50%; top: calc(50% + 19%); transform: translateX(-50%); font-weight: 800; color: #ffd66b; text-shadow: 0 0 6px #000, 0 0 2px #000; font-size: 1.1rem; white-space: nowrap; }
 @keyframes ring { 50% { transform: scale(1.12); } }
 .photo figcaption p { font-size: 1.1rem; }

@@ -159,7 +159,7 @@
   function loadChart() {
     if (!document.getElementById('skychart')) return;
     var s = document.createElement('script');
-    s.src = (document.body.getAttribute('data-base') || '') + '/assets/js/skychart.js';
+    s.src = (document.body.getAttribute('data-base') || '') + '/assets/js/skychart.js?v=' + (document.body.getAttribute('data-v') || '');
     document.head.appendChild(s);
   }
 

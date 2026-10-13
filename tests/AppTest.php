@@ -91,6 +91,10 @@ final class AppTest extends TestCase
         self::assertStringContainsString('/assets/survey/2.jpg', $body);
         self::assertStringContainsString('Haleakalā', $body);
         self::assertStringContainsString('three-quarters of the width of the full Moon', $body);
+        // The marker must be a transparent ring even if the stylesheet fails to load.
+        self::assertMatchesRegularExpression('#<g class="photo-ring" fill="none"#', $body);
+        self::assertStringNotContainsString('fill="#', $body);
+        self::assertMatchesRegularExpression('#app\.css\?v=[0-9a-f]{10}#', $body);
     }
 
     public function testResultFallsBackWithoutPhoto(): void

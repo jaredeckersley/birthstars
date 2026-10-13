@@ -27,7 +27,19 @@ final class SurveyImages
             1993.0,
             -90.0,
         ],
+        'CDS/P/2MASS/color' => [
+            'Two Micron All Sky Survey (2MASS), infrared',
+            'Two Micron All Sky Survey (2MASS), UMass/IPAC-Caltech, NASA/NSF; image via CDS hips2fits',
+            1999.0,
+            -90.0,
+        ],
     ];
+
+    /** Order in which surveys are tried for a star: Pan-STARRS (if covered), then DSS2, then 2MASS. */
+    public static function candidatesFor(float $decDeg): array
+    {
+        return array_values(array_unique([self::surveyFor($decDeg), 'CDS/P/DSS2/color', 'CDS/P/2MASS/color']));
+    }
 
     private string $dir;
     /** @var array<string, array<string, mixed>>|null */
@@ -132,6 +144,7 @@ final class SurveyImages
             'credit' => self::SURVEYS[$hips][1] ?? 'CDS hips2fits',
             'fov_words' => self::fovInWords($fov),
             'pan_starrs' => strpos($hips, 'PanSTARRS') !== false,
+            'twomass' => strpos($hips, '2MASS') !== false,
         ];
     }
 }
