@@ -1,0 +1,23 @@
+{
+    "name": "jaredeckersley/birthstars",
+    "description": "Birthday Stars: find the star whose light left it when you were born.",
+    "type": "project",
+    "license": "MIT",
+    "require": {
+        "php": ">=8.2",
+        "ext-pdo_sqlite": "*",
+        "slim/slim": "^4.14",
+        "slim/psr7": "^1.7",
+        "slim/twig-view": "^3.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.0"
+    },
+    "autoload": { "psr-4": { "BirthStars\\": "src/" } },
+    "autoload-dev": { "psr-4": { "BirthStars\\Tests\\": "tests/" } },
+    "scripts": {
+        "test": "phpunit",
+        "import-stars": "php bin/import-stars.php"
+    },
+    "config": { "sort-packages": true, "platform": { "php": "8.2.0" } }
+}
