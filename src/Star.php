@@ -5,25 +5,26 @@ declare(strict_types=1);
 namespace BirthStars;
 
 /** One star from the catalog, as stored in the SQLite database. */
+/** @psalm-immutable Properties are treated as read-only (PHP 8.0 has no readonly). */
 final class Star
 {
     public const PARSEC_IN_LY = 3.261563777;
 
     public function __construct(
-        public readonly int $hygId,
-        public readonly ?int $hip,
-        public readonly ?int $hr,
-        public readonly ?int $hd,
-        public readonly ?string $gliese,
-        public readonly ?string $proper,
-        public readonly ?string $bayer,
-        public readonly ?int $flamsteed,
-        public readonly ?string $constellation,
-        public readonly float $raHours,
-        public readonly float $decDeg,
-        public readonly float $distanceLy,
-        public readonly float $magnitude,
-        public readonly ?string $spectralType,
+        public int $hygId,
+        public ?int $hip,
+        public ?int $hr,
+        public ?int $hd,
+        public ?string $gliese,
+        public ?string $proper,
+        public ?string $bayer,
+        public ?int $flamsteed,
+        public ?string $constellation,
+        public float $raHours,
+        public float $decDeg,
+        public float $distanceLy,
+        public float $magnitude,
+        public ?string $spectralType,
     ) {
     }
 

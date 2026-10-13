@@ -13,8 +13,11 @@ final class AgeCalculator
     public const MAX_AGE_YEARS = 120;
     private const DAYS_PER_YEAR = 365.25;
 
-    public function __construct(private readonly DateTimeZone $tz = new DateTimeZone('Pacific/Honolulu'))
+    private DateTimeZone $tz;
+
+    public function __construct(?DateTimeZone $tz = null)
     {
+        $this->tz = $tz ?? new DateTimeZone('Pacific/Honolulu');
     }
 
     /**

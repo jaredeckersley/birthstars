@@ -28,7 +28,7 @@ This version is a rewrite for **Journey Through the Universe**, Hawaiʻi Island.
   - No secrets anywhere, and no personal data is stored.
 
 ## Tech
-- PHP ≥ 8.2 (tested on 8.4), Slim 4, Twig 3, PDO SQLite, PHPUnit 11.
+- PHP ≥ 8.0 (tested on 8.0.30 and 8.4), Slim 4, Twig 3, PDO SQLite, PHPUnit 9.6.
 - Composer only. No JS build step: plain ES5 JavaScript and one CSS file.
 
 ```
@@ -49,7 +49,7 @@ composer test
 ```
 
 ## Deploy (plain Apache or Nginx + PHP-FPM host)
-1. **Requirements.** PHP 8.2+ with `pdo_sqlite` (plus `mbstring` and `ctype`, which are usually on by default), and Composer.
+1. **Requirements.** PHP 8.0+ with `pdo_sqlite` (plus `mbstring` and `ctype`, which are usually on by default), and Composer.
 2. **Copy the code** to the server, e.g. `/var/www/birthstars`:
    ```bash
    git clone https://github.com/jaredeckersley/birthstars.git /var/www/birthstars
@@ -68,7 +68,7 @@ composer test
          location ~ \.php$ {
              include fastcgi_params;
              fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-             fastcgi_pass unix:/run/php/php8.3-fpm.sock;
+             fastcgi_pass unix:/run/php/php8.0-fpm.sock;
          }
      }
      ```

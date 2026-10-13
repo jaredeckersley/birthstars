@@ -10,8 +10,8 @@ use DateTimeImmutable;
 final class BirthdayStarFinder
 {
     public function __construct(
-        private readonly StarRepository $stars,
-        private readonly AgeCalculator $ages,
+        private StarRepository $stars,
+        private AgeCalculator $ages,
     ) {
     }
 

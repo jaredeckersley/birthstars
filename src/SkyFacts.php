@@ -8,13 +8,14 @@ use DateTimeImmutable;
 use DateTimeZone;
 
 /** Kid-friendly facts about where and how a star can be seen from an observing site. */
+/** @psalm-immutable Properties are treated as read-only (PHP 8.0 has no readonly). */
 final class SkyFacts
 {
     public function __construct(
-        public readonly float $latitude = 19.72,
-        public readonly float $longitude = -155.08,
-        public readonly string $placeName = 'Hilo, Hawaiʻi',
-        public readonly string $timezone = 'Pacific/Honolulu',
+        public float $latitude = 19.72,
+        public float $longitude = -155.08,
+        public string $placeName = 'Hilo, Hawaiʻi',
+        public string $timezone = 'Pacific/Honolulu',
     ) {
     }
 

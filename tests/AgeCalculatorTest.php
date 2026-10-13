@@ -7,7 +7,6 @@ namespace BirthStars\Tests;
 use BirthStars\AgeCalculator;
 use BirthStars\InvalidBirthDate;
 use DateTimeImmutable;
-use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 final class AgeCalculatorTest extends TestCase
@@ -44,7 +43,9 @@ final class AgeCalculatorTest extends TestCase
         yield 'negative' => ['-5', '1', '1'];
     }
 
-    #[DataProvider('badDates')]
+    /**
+     * @dataProvider badDates
+     */
     public function testRejectsBadInput(mixed $y, mixed $m, mixed $d): void
     {
         $this->expectException(InvalidBirthDate::class);

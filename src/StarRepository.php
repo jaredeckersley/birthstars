@@ -8,7 +8,7 @@ use PDO;
 
 final class StarRepository
 {
-    public function __construct(private readonly PDO $pdo)
+    public function __construct(private PDO $pdo)
     {
     }
 

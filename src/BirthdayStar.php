@@ -6,13 +6,14 @@ namespace BirthStars;
 
 use DateTimeImmutable;
 
+/** @psalm-immutable Properties are treated as read-only (PHP 8.0 has no readonly). */
 final class BirthdayStar
 {
     public function __construct(
-        public readonly Star $star,
-        public readonly float $ageYears,
-        public readonly DateTimeImmutable $birth,
-        public readonly int $starsReached,
+        public Star $star,
+        public float $ageYears,
+        public DateTimeImmutable $birth,
+        public int $starsReached,
     ) {
     }
 
