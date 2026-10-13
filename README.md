@@ -48,7 +48,9 @@ php -S 127.0.0.1:8000 -t public public/index.php
 composer test
 ```
 
-## Deploy (plain Apache or Nginx + PHP-FPM host)
+## Deploy
+
+### Option A: dedicated (virtual) host, web root = `public/`
 1. **Requirements.** PHP 8.0+ with `pdo_sqlite` (plus `mbstring` and `ctype`, which are usually on by default), and Composer.
 2. **Copy the code** to the server, e.g. `/var/www/birthstars`:
    ```bash
@@ -72,8 +74,25 @@ composer test
          }
      }
      ```
-4. **Hosting in a subfolder** (e.g. `example.org/birthstars/`): set the environment variable `APP_BASE_PATH=/birthstars`. For Apache, use `SetEnv APP_BASE_PATH /birthstars`; for Nginx, use `fastcgi_param APP_BASE_PATH /birthstars;`.
+4. **Subfolder of an existing site.** The base path (e.g. `/birthstars`) is detected automatically. Setting `APP_BASE_PATH=/birthstars` (via `SetEnv` or `fastcgi_param`) still works and overrides the detection.
+
 5. **Debug output** is off. Set `APP_DEBUG=1` only while troubleshooting.
+
+### Option B: subfolder inside an existing Apache web root (no vhost changes)
+Use this when the server already serves `/var/www/html` and you want the app at `https://host/birthstars`. It needs PHP 8.0+, `mod_rewrite`, and `AllowOverride All` (or at least `FileInfo Options AuthConfig Limit`) for `/var/www/html`.
+```bash
+cd /var/www/html
+git clone https://github.com/jaredeckersley/birthstars.git birthstars
+cd birthstars
+composer install --no-dev --optimize-autoloader
+sudo a2enmod rewrite && sudo systemctl reload apache2   # if not already enabled
+```
+That's it: open `https://host/birthstars/` (and `/birthstars/kiosk`).
+- The repo-root `.htaccess` sends every request into `public/`. Static files are served directly, and everything else goes to `public/index.php`.
+- It returns **404** for `src/`, `vendor/`, `data/`, `bin/`, `tests/`, `templates/`, `.git`, dotfiles, `composer.*`, `README`, `LICENSE` and `phpunit.xml`.
+- If `mod_rewrite` is missing, it denies everything rather than exposing files.
+- The base path `/birthstars` is detected automatically, so you don't need `APP_BASE_PATH`.
+- To update later: `git pull && composer install --no-dev --optimize-autoloader`.
 
 ### Booth kiosk with no internet
 Run it on a laptop with `php -S 127.0.0.1:8000 -t public public/index.php` and open Chrome in kiosk mode: `google-chrome --kiosk http://127.0.0.1:8000/kiosk`. Everything works offline.

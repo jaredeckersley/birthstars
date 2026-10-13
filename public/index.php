@@ -10,8 +10,8 @@ if (PHP_SAPI === 'cli-server' && is_file(__DIR__ . parse_url($_SERVER['REQUEST_U
 }
 
 $config = ['debug' => getenv('APP_DEBUG') === '1'];
-if (($base = getenv('APP_BASE_PATH')) !== false && $base !== '') {
-    $config['base_path'] = rtrim($base, '/');
-}
+// APP_BASE_PATH overrides auto-detection (e.g. "/birthstars").
+$override = getenv('APP_BASE_PATH');
+$config['base_path'] = BirthStars\BasePath::detect($_SERVER, $override === false ? null : $override);
 
 BirthStars\App::create($config)->run();

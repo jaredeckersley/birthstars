@@ -1,0 +1,23 @@
+# Birthday Stars: lets the repo be cloned straight into a folder of an Apache DocumentRoot
+# (e.g. /var/www/html/birthstars -> https://host/birthstars). Only public/ is web-visible.
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Never expose code, data, tooling or dotfiles.
+    RewriteRule ^(\.git|\.github|src|vendor|data|bin|tests|templates)(/|$) - [R=404,L,NC]
+    RewriteRule ^(\.[^/]*|composer\.(json|lock)|phpunit\.xml(\.dist)?|README(\.md)?|LICENSE)$ - [R=404,L,NC]
+
+    # Already inside public/ (after our own rewrite): let public/.htaccess handle it.
+    RewriteRule ^public(/|$) - [L]
+
+    # Everything else goes to public/ (static files are served directly from there,
+    # all other requests end up at public/index.php).
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+# Without mod_rewrite the app cannot work safely: deny everything.
+<IfModule !mod_rewrite.c>
+    Require all denied
+</IfModule>
