@@ -1,0 +1,96 @@
+{% extends 'layout.twig' %}
+{% block title %}{{ name }} – your Birthday Star{% endblock %}
+{% block bodyclass %}page-result{% endblock %}
+{% block content %}
+<section class="reveal" aria-labelledby="star-name">
+  <p class="reveal-intro">Born {{ r.birth|date('F j, Y') }} … you are {{ age_years|number_format(1) }} years old … searching {{ star_count|number_format }} nearby stars …</p>
+  <div class="reveal-burst" aria-hidden="true"><span class="burst-star"></span></div>
+  <p class="reveal-kicker">Your Birthday Star is</p>
+  <h1 id="star-name" class="star-name">{{ name }}</h1>
+  {% if designation != name %}<p class="designation">also called <strong>{{ designation }}</strong></p>{% endif %}
+</section>
+
+<section class="explain card">
+  <h2>The light you see left it when you were born</h2>
+  <p class="big-number"><span>{{ star.distanceLy|number_format(1) }}</span> light years away</p>
+  {% if r.isTooYoungForAnyStar %}
+  <p>You are {{ age_years|number_format(1) }} years old, and that's so young that no other star's light has had time to make the whole trip in your lifetime! {{ name }} is one of the closest stars of all. Its light set off <strong>{{ star.distanceLy|number_format(1) }} years</strong> ago, before you were born, and the light leaving it today will arrive in about {{ (star.distanceLy - age_years)|round(0, 'ceil') }} years. Come back then!</p>
+  {% else %}
+  <p>You are about <strong>{{ age_years|number_format(1) }} years old</strong>. Light from {{ name }} takes about <strong>{{ star.distanceLy|number_format(1) }} years</strong> to reach Earth. So the starlight arriving in your eyes tonight <strong>set off around {{ r.lightLeftOn|date('F Y') }}</strong>, right around when you were born. It has been zooming through space your whole life!</p>
+  {% endif %}
+  <p class="aside">Light is the fastest thing there is: {{ light_speed_miles|number_format }} miles every second. Even at that speed, the trip is about <strong>{{ (miles / 1e12)|number_format(0) }} trillion miles</strong> long.</p>
+</section>
+
+<section class="facts" aria-label="Fun facts">
+  <div class="fact card">
+    <h3>How bright?</h3>
+    <p>Magnitude {{ star.magnitude|number_format(1) }}: {{ facts.brightness }}</p>
+    <p class="hint">In astronomy, smaller numbers mean brighter stars.</p>
+  </div>
+  {% if constellation %}
+  <div class="fact card">
+    <h3>Constellation</h3>
+    <p>It's in <strong>{{ constellation }}</strong>{% if constellation_meaning %}, {{ constellation_meaning }}{% endif %}.</p>
+  </div>
+  {% endif %}
+  <div class="fact card">
+    <h3>Can I see it from Hawaiʻi?</h3>
+    {% if not facts.ever_rises %}
+    <p>Sadly, no. It's so far south that it never rises above the horizon at {{ facts.place }}.</p>
+    {% else %}
+      {% if facts.up_tonight %}
+      <p><strong>Yes, it's up tonight!</strong> At 8:30 pm it is about {{ facts.tonight_altitude }}° above the horizon. Look toward the {{ facts.direction }}.</p>
+      {% else %}
+      <p>Not this evening. It's best seen in the evening around <strong>{{ facts.best_month }}</strong>, high in the {{ facts.direction }}ern sky (up to {{ facts.max_altitude }}°).</p>
+      {% endif %}
+      {% if not facts.naked_eye %}<p class="hint">You'll need binoculars or a telescope.</p>{% endif %}
+    {% endif %}
+  </div>
+  {% if star.spectralType %}
+  <div class="fact card">
+    <h3>What kind of star?</h3>
+    <p>Spectral type <strong>{{ star.spectralType }}</strong>.
+    {% set t = star.spectralType|first|upper %}
+    {% if t == 'O' or t == 'B' %}A hot, blue-white star, much hotter than our Sun!
+    {% elseif t == 'A' %}A white star, hotter than our Sun.
+    {% elseif t == 'F' %}A yellow-white star, a bit hotter than our Sun.
+    {% elseif t == 'G' %}A yellow star, a lot like our Sun!
+    {% elseif t == 'K' %}An orange star, a bit cooler than our Sun.
+    {% elseif t == 'M' %}A red star, cooler than our Sun.
+    {% elseif t == 'D' %}A white dwarf: the tiny, hot leftover core of an old star.
+    {% endif %}</p>
+  </div>
+  {% endif %}
+</section>
+
+<section class="chart-wrap card" aria-labelledby="chart-h">
+  <h2 id="chart-h">Find it in the sky</h2>
+  <p class="hint noprint">Drag to look around, pinch or use the + and − buttons to zoom. Arrow keys work too.</p>
+  <div class="chart-box">
+    <canvas id="skychart" class="skychart" tabindex="0" role="img"
+      aria-label="Star chart centred on {{ name }} in {{ constellation ?: 'the sky' }}"
+      data-ra="{{ (star.raHours * 15)|round(4) }}" data-dec="{{ star.decDeg|round(4) }}" data-name="{{ name }}"
+      data-stars="{{ base }}/assets/data/sky-stars.json" data-lines="{{ base }}/assets/data/constellations.lines.json"
+      data-con="{{ star.constellation }}" data-con-name="{{ constellation }}" width="900" height="600"></canvas>
+    <div class="chart-controls noprint">
+      <button type="button" class="btn-round" data-zoom="in" aria-label="Zoom in">+</button>
+      <button type="button" class="btn-round" data-zoom="out" aria-label="Zoom out">−</button>
+      <button type="button" class="btn-round" data-zoom="reset" aria-label="Centre on my star">◎</button>
+    </div>
+  </div>
+  <p class="coords">Sky coordinates (J2000): RA {{ (star.raHours)|number_format(3) }} h, Dec {{ star.decDeg|number_format(2) }}°</p>
+</section>
+
+<section class="actions noprint">
+  <a class="btn btn-big" href="{{ base }}/{% if kiosk %}kiosk{% endif %}">Try another birthday ✦</a>
+  {% if not kiosk %}<button type="button" class="btn" id="print-btn">Print my star</button>{% endif %}
+</section>
+
+<details class="inspire card noprint">
+  <summary>How does this work? (and how you could do it too)</summary>
+  <p>Astronomers measure star distances by watching each star shift a tiny bit as Earth goes around the Sun. That shift is called <em>parallax</em>. Satellites like <strong>Hipparcos</strong> and <strong>Gaia</strong> measured millions of stars this way.
+  This website looks up how old you are, then searches a catalog of thousands of nearby stars for the one whose distance in light years best matches your age.</p>
+  <p>Telescopes on <strong>Maunakea</strong>, right here on Hawaiʻi Island, study stars like yours every night. Scientists, engineers and computer programmers all work together there. Love space? Love puzzles? Love computers? There's a place for you in astronomy!</p>
+</details>
+<p class="print-only">{{ source }}. Find your own Birthday Star with Journey Through the Universe!</p>
+{% endblock %}

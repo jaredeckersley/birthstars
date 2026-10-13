@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Birthday Stars{% endblock %}</title>
+<meta name="description" content="Find the star whose light set off on its journey to Earth on the day you were born.">
+<link rel="icon" href="{{ base }}/assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="{{ base }}/assets/css/app.css">
+<script src="{{ base }}/assets/js/app.js" defer></script>
+{% block head %}{% endblock %}
+</head>
+<body class="{% if kiosk %}kiosk{% endif %} {% block bodyclass %}{% endblock %}" data-base="{{ base }}"{% if kiosk %} data-kiosk-home="{{ base }}/kiosk" data-kiosk-timeout="90"{% endif %}>
+<canvas id="starfield" aria-hidden="true"></canvas>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header noprint">
+  <a class="brand" href="{{ base }}/{% if kiosk %}kiosk{% endif %}"><span class="brand-star" aria-hidden="true">✦</span> Birthday Stars{% if subtitle_haw %} <span class="brand-sub" lang="haw">{{ subtitle_haw }}</span>{% endif %}</a>
+  {% if not kiosk %}<nav aria-label="Main"><a href="{{ base }}/about">How this works</a></nav>{% else %}
+  <button type="button" class="btn-ghost" id="fullscreen-btn">Full screen</button>{% endif %}
+</header>
+<main id="main" tabindex="-1">
+{% block content %}{% endblock %}
+</main>
+<footer class="site-footer">
+  <div class="logo-strip">
+    <img src="{{ base }}/assets/img/logos/jttu-hawaii-island.png" alt="Journey Through the Universe, Hawaiʻi Island" class="logo logo-jttu" width="160" height="116">
+    <img src="{{ base }}/assets/img/logos/gemini-white.svg" alt="International Gemini Observatory" class="logo logo-gemini noprint-logo" height="44">
+    <span class="logo-pill"><img src="{{ base }}/assets/img/logos/nsf-noirlab-horizontal-color.png" alt="U.S. National Science Foundation NOIRLab" class="logo logo-nsf" width="230" height="64"></span>
+  </div>
+  <p>Made for <strong>Journey Through the Universe</strong>, Hawaiʻi Island. Logos courtesy of U.S. NSF &amp; NOIRLab, used with permission.
+  Star data: HYG Database v4.1 (CC BY-SA 4.0).
+  {% if not kiosk %}<a href="{{ base }}/about">How this works &amp; credits</a>{% endif %}</p>
+</footer>
+{% if kiosk %}<div id="idle-warning" class="idle-warning" hidden role="alert">Still there? Starting over in <span id="idle-count">10</span>… <button type="button" class="btn">I'm here!</button></div>{% endif %}
+</body>
+</html>

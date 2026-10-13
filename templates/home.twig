@@ -1,0 +1,64 @@
+{% extends 'layout.twig' %}
+{% block bodyclass %}page-home{% endblock %}
+{% block content %}
+<section class="hero">
+  <p class="hero-title">Birthday Stars{% if subtitle_haw %}<span class="hero-sub" lang="haw">{{ subtitle_haw }}</span>{% endif %}</p>
+  <h1 class="glow">Which star was born <em>with you</em>?</h1>
+  <p class="lead">Starlight takes years to reach us. Somewhere out there is a star whose light <strong>left it on the day you were born</strong> and is arriving at Earth right about now. Let's find it!</p>
+</section>
+
+{% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
+
+<form class="birthday-form" action="{{ base }}/star" method="get" id="birthday-form" novalidate>
+  {% if kiosk %}<input type="hidden" name="kiosk" value="1">{% endif %}
+
+  <div class="wizard" id="wizard" hidden>
+    <ol class="steps" aria-label="Progress">
+      <li data-step-dot="year">Year</li><li data-step-dot="month">Month</li><li data-step-dot="day">Day</li>
+    </ol>
+
+    <section class="step" data-step="year" aria-labelledby="h-year">
+      <h2 id="h-year">What <em>year</em> were you born?</h2>
+      <output class="digits" id="year-display" aria-live="polite">____</output>
+      <div class="keypad" role="group" aria-label="Year keypad">
+        {% for n in [1,2,3,4,5,6,7,8,9] %}<button type="button" class="key" data-key="{{ n }}">{{ n }}</button>{% endfor %}
+        <button type="button" class="key key-alt" data-key="back" aria-label="Delete last digit">⌫</button>
+        <button type="button" class="key" data-key="0">0</button>
+        <button type="button" class="key key-go" data-next="month" disabled>Next ➜</button>
+      </div>
+    </section>
+
+    <section class="step" data-step="month" aria-labelledby="h-month" hidden>
+      <h2 id="h-month">What <em>month</em>?</h2>
+      <div class="tiles tiles-month" role="group" aria-label="Months">
+        {% for m in ['January','February','March','April','May','June','July','August','September','October','November','December'] %}
+        <button type="button" class="tile" data-month="{{ loop.index }}">{{ m }}</button>{% endfor %}
+      </div>
+      <button type="button" class="btn-ghost" data-back="year">⬅ Back</button>
+    </section>
+
+    <section class="step" data-step="day" aria-labelledby="h-day" hidden>
+      <h2 id="h-day">And what <em>day</em>?</h2>
+      <div class="tiles tiles-day" id="day-tiles" role="group" aria-label="Days"></div>
+      <button type="button" class="btn-ghost" data-back="month">⬅ Back</button>
+    </section>
+  </div>
+
+  <fieldset class="plain-picker" id="plain-picker">
+    <legend>Your birthday</legend>
+    <label>Year <select name="year" id="f-year" required>
+      <option value="">Year</option>
+      {% for y in max_year..min_year %}<option value="{{ y }}"{% if sel.year == y %} selected{% endif %}>{{ y }}</option>{% endfor %}
+    </select></label>
+    <label>Month <select name="month" id="f-month" required>
+      <option value="">Month</option>
+      {% for m in ['January','February','March','April','May','June','July','August','September','October','November','December'] %}<option value="{{ loop.index }}"{% if sel.month == loop.index %} selected{% endif %}>{{ m }}</option>{% endfor %}
+    </select></label>
+    <label>Day <select name="day" id="f-day" required>
+      <option value="">Day</option>
+      {% for d in 1..31 %}<option value="{{ d }}"{% if sel.day == d %} selected{% endif %}>{{ d }}</option>{% endfor %}
+    </select></label>
+    <button type="submit" class="btn btn-big">Find my star ✦</button>
+  </fieldset>
+</form>
+{% endblock %}
