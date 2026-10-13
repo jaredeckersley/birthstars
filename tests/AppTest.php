@@ -13,9 +13,13 @@ final class AppTest extends TestCase
     use FixtureDb;
 
     /** @return array{int, string, array<string, string[]>} */
-    private function get(string $uri): array
+    private function get(string $uri, ?string $surveyDir = null): array
     {
-        $app = App::create(['db' => $this->buildFixtureDb(), 'now' => new \DateTimeImmutable('2026-10-13T12:00:00-10:00')]);
+        $app = App::create([
+            'db' => $this->buildFixtureDb(),
+            'now' => new \DateTimeImmutable('2026-10-13T12:00:00-10:00'),
+            'survey_dir' => $surveyDir ?? $this->tmpDir . '/no-survey',
+        ]);
         $res = $app->handle((new ServerRequestFactory())->createServerRequest('GET', $uri)->withQueryParams(self::query($uri)));
 
         return [$res->getStatusCode(), (string) $res->getBody(), $res->getHeaders()];
@@ -69,5 +73,39 @@ final class AppTest extends TestCase
         [$code, $body] = $this->get('/no-such-page');
         self::assertSame(404, $code);
         self::assertStringContainsString('Lost in space', $body);
+    }
+
+    public function testResultShowsTelescopePhotoWhenAvailable(): void
+    {
+        $this->buildFixtureDb();
+        $dir = $this->tmpDir . '/survey';
+        mkdir($dir);
+        // 61 Cyg is HYG id 2 in the fixture.
+        file_put_contents($dir . '/manifest.json', json_encode(['images' => ['2' => ['hips' => 'CDS/P/PanSTARRS/DR1/color-z-zg-g', 'fov_deg' => 0.35]]]));
+        file_put_contents($dir . '/2.jpg', "\xFF\xD8");
+        [$code, $body] = $this->get('/star?year=2015&month=6&day=1', $dir);
+        array_map('unlink', glob($dir . '/*') ?: []);
+        rmdir($dir);
+        self::assertSame(200, $code);
+        self::assertStringContainsString('photographed by a real telescope', $body);
+        self::assertStringContainsString('/assets/survey/2.jpg', $body);
+        self::assertStringContainsString('Haleakalā', $body);
+        self::assertStringContainsString('three-quarters of the width of the full Moon', $body);
+    }
+
+    public function testResultFallsBackWithoutPhoto(): void
+    {
+        [$code, $body] = $this->get('/star?year=2015&month=6&day=1');
+        self::assertSame(200, $code);
+        self::assertStringContainsString("don't have a telescope photo", $body);
+        self::assertStringNotContainsString('/assets/survey/', $body);
+    }
+
+    public function testHawaiianNameShownForSirius(): void
+    {
+        [$code, $body] = $this->get('/star?year=2017&month=1&day=1');
+        self::assertSame(200, $code);
+        self::assertStringContainsString('<strong lang="haw">ʻAʻā</strong>', $body);
+        self::assertStringContainsString('hawaiian-star-names.json', $body);
     }
 }

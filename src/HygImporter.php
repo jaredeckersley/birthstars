@@ -15,7 +15,7 @@ final class HygImporter
     public const MAX_DISTANCE_LY = 135.0;
     public const SKY_CHART_MAG_LIMIT = 5.5;
 
-    private const REQUIRED = ['id', 'hip', 'hd', 'hr', 'gl', 'proper', 'ra', 'dec', 'dist', 'mag', 'spect', 'ci', 'bayer', 'flam', 'con'];
+    private const REQUIRED = ['id', 'hip', 'hd', 'hr', 'gl', 'proper', 'ra', 'dec', 'dist', 'mag', 'spect', 'ci', 'pmra', 'pmdec', 'bayer', 'flam', 'con'];
 
     /**
      * @param array<string, string> $meta Provenance (source URL, sha256, release...)
@@ -45,9 +45,9 @@ final class HygImporter
             hyg_id INTEGER PRIMARY KEY, hip INTEGER, hr INTEGER, hd INTEGER, gl TEXT,
             proper TEXT, bayer TEXT, flam INTEGER, con TEXT,
             ra REAL NOT NULL, dec REAL NOT NULL, dist_ly REAL NOT NULL, mag REAL NOT NULL,
-            spect TEXT, named INTEGER NOT NULL)');
+            spect TEXT, named INTEGER NOT NULL, pmra REAL, pmdec REAL)');
         $pdo->exec('CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT NOT NULL)');
-        $ins = $pdo->prepare('INSERT INTO stars VALUES (:hyg_id,:hip,:hr,:hd,:gl,:proper,:bayer,:flam,:con,:ra,:dec,:dist_ly,:mag,:spect,:named)');
+        $ins = $pdo->prepare('INSERT INTO stars VALUES (:hyg_id,:hip,:hr,:hd,:gl,:proper,:bayer,:flam,:con,:ra,:dec,:dist_ly,:mag,:spect,:named,:pmra,:pmdec)');
 
         $stars = $named = 0;
         $sky = [];
@@ -88,6 +88,8 @@ final class HygImporter
                 'gl' => $n($g('gl')), 'proper' => $n($g('proper')), 'bayer' => $n($g('bayer')),
                 'flam' => $i($g('flam')), 'con' => $n($g('con')), 'ra' => $ra, 'dec' => $dec,
                 'dist_ly' => round($ly, 4), 'mag' => $mag, 'spect' => $n($g('spect')), 'named' => $isNamed ? 1 : 0,
+                'pmra' => is_numeric($g('pmra')) ? (float) $g('pmra') : null,
+                'pmdec' => is_numeric($g('pmdec')) ? (float) $g('pmdec') : null,
             ]);
             $stars++;
             $named += $isNamed ? 1 : 0;

@@ -21,7 +21,7 @@ final class App
     public const SUBTITLE_HAW = 'Hōkū Hānau';
 
     /**
-     * @param array{db?: string, debug?: bool, base_path?: string, now?: DateTimeImmutable} $config
+     * @param array{db?: string, debug?: bool, base_path?: string, now?: DateTimeImmutable, survey_dir?: string, subtitle_haw?: string} $config
      */
     public static function create(array $config = []): SlimApp
     {
@@ -32,6 +32,8 @@ final class App
         $ages = new AgeCalculator($tz);
         $finder = new BirthdayStarFinder($repo, $ages);
         $sky = new SkyFacts();
+        $hawaiian = new HawaiianNames($root . '/public/assets/data/hawaiian-star-names.json');
+        $photos = new SurveyImages($config['survey_dir'] ?? $root . '/public/assets/survey');
 
         $app = AppFactory::create();
         if (isset($config['base_path'])) {
@@ -77,7 +79,7 @@ final class App
         $app->get('/', static fn (Request $q, Response $r) => $home($q, $r, $kiosk($q)));
         $app->get('/kiosk', static fn (Request $q, Response $r) => $home($q, $r, true));
 
-        $app->get('/star', static function (Request $req, Response $res) use ($twig, $ages, $finder, $sky, $now, $kiosk, $home, $meta) {
+        $app->get('/star', static function (Request $req, Response $res) use ($twig, $ages, $finder, $sky, $photos, $hawaiian, $now, $kiosk, $home, $meta) {
             $q = $req->getQueryParams();
             try {
                 $birth = $ages->birthDate($q['year'] ?? null, $q['month'] ?? null, $q['day'] ?? null, $now);
@@ -101,6 +103,8 @@ final class App
                 'miles' => $star->distanceLy * 5.878625e12,
                 'source' => $meta['source'] ?? 'HYG Database',
                 'star_count' => (int) ($meta['star_count'] ?? 0),
+                'photo' => $photos->forStar($star->hygId),
+                'hawaiian' => $hawaiian->forHip($star->hip),
             ]);
         });
 

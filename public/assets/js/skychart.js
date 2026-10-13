@@ -8,7 +8,7 @@
   var D2R = Math.PI / 180;
   var target = { ra: parseFloat(cv.dataset.ra), dec: parseFloat(cv.dataset.dec), name: cv.dataset.name, con: cv.dataset.con, conName: cv.dataset.conName || cv.dataset.con };
   var view = { ra: target.ra, dec: target.dec, fov: 70 };
-  var stars = [], lines = [], printing = false, t0 = performance.now();
+  var stars = [], lines = [], conNames = [], hawaiian = [], printing = false, t0 = performance.now();
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   function size() {
@@ -51,14 +51,32 @@
       ctx.fillStyle = printing ? '#000' : colour(st[3]);
       ctx.beginPath(); ctx.arc(p[0], p[1], r, 0, 6.283); ctx.fill();
     }
-    // Constellation label
-    if (target.con) {
-      var lc = lines.filter(function (c) { return c.id === target.con; })[0];
-      if (lc && lc.lines[0]) {
-        var lp = project(lc.lines[0][0][0], lc.lines[0][0][1]);
-        if (lp) { ctx.fillStyle = printing ? '#c07000' : '#ffd66b'; ctx.font = 'bold ' + 18 * s + 'px system-ui, sans-serif'; ctx.fillText(target.conName.toUpperCase(), lp[0] + 8 * s, lp[1] - 8 * s); }
-      }
-    }
+    // Constellation names: fewer at wide zoom (rank 1 = major), birthday constellation always shown.
+    var maxRank = view.fov > 110 ? 1 : (view.fov > 60 ? 2 : 3);
+    var fs = Math.max(11, Math.min(17, 1200 / view.fov)) * s * (cv.clientWidth < 500 ? 1.5 : 1);
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    conNames.forEach(function (c) {
+      var mine = c[0] === target.con;
+      if (!mine && c[4] > maxRank) return;
+      var p = project(c[2], c[3]); if (!p || p[0] < 0 || p[1] < 0 || p[0] > W || p[1] > H) return;
+      ctx.font = (mine ? '800 ' + fs * 1.35 : '600 ' + fs) + 'px system-ui, sans-serif';
+      ctx.fillStyle = mine ? (printing ? '#c07000' : '#ffd66b') : (printing ? '#666' : 'rgba(150,200,255,.75)');
+      if (!printing) { ctx.shadowColor = '#000'; ctx.shadowBlur = 4 * s; }
+      ctx.fillText(mine ? c[1].toUpperCase() : c[1], p[0], p[1]);
+      ctx.shadowBlur = 0;
+    });
+    // Hawaiian star names (Polynesian Voyaging Society list)
+    ctx.textAlign = 'left';
+    hawaiian.forEach(function (h) {
+      if (Math.abs(h.ra_deg - target.ra) < .05 && Math.abs(h.dec_deg - target.dec) < .05) return; // shown with the marker instead
+      var p = project(h.ra_deg, h.dec_deg); if (!p || p[0] < 0 || p[1] < 0 || p[0] > W || p[1] > H) return;
+      ctx.font = 'italic 700 ' + fs * 1.05 + 'px system-ui, sans-serif';
+      ctx.fillStyle = printing ? '#006a6a' : '#7fe7ff';
+      if (!printing) { ctx.shadowColor = '#000'; ctx.shadowBlur = 4 * s; }
+      ctx.fillText(h.hawaiian + ' (' + h.english + ')', p[0] + 8 * s, p[1] - 10 * s);
+      ctx.shadowBlur = 0;
+    });
+    ctx.textBaseline = 'alphabetic';
     // Birthday star marker
     var tp = project(target.ra, target.dec);
     if (tp) {
@@ -70,6 +88,8 @@
       ctx.fillStyle = printing ? '#000' : '#fff'; ctx.beginPath(); ctx.arc(tp[0], tp[1], 4 * s, 0, 6.283); ctx.fill();
       ctx.font = 'bold ' + 22 * s + 'px system-ui, sans-serif'; ctx.fillStyle = printing ? '#d00' : '#ffd66b';
       ctx.fillText(target.name, tp[0] + 30 * s, tp[1] + 40 * s);
+      var hn = hawaiian.filter(function (h) { return Math.abs(h.ra_deg - target.ra) < .05 && Math.abs(h.dec_deg - target.dec) < .05; })[0];
+      if (hn) { ctx.font = 'italic 700 ' + 18 * s + 'px system-ui, sans-serif'; ctx.fillStyle = printing ? '#006a6a' : '#7fe7ff'; ctx.fillText(hn.hawaiian, tp[0] + 30 * s, tp[1] + 64 * s); }
     }
     ctx.font = 14 * s + 'px system-ui, sans-serif'; ctx.fillStyle = printing ? '#555' : 'rgba(201,209,245,.8)';
     ctx.fillText('N ↑   E ←', 12 * s, H - 14 * s);
@@ -130,8 +150,12 @@
   addEventListener('afterprint', function () { printing = false; if (!reduce) requestAnimationFrame(draw); else redraw(); });
 
   size();
-  Promise.all([fetch(cv.dataset.stars).then(function (r) { return r.json(); }), fetch(cv.dataset.lines).then(function (r) { return r.json(); })])
+  function getJson(u) { return u ? fetch(u).then(function (r) { return r.json(); }).catch(function () { return null; }) : Promise.resolve(null); }
+  Promise.all([getJson(cv.dataset.stars), getJson(cv.dataset.lines), getJson(cv.dataset.names), getJson(cv.dataset.hawaiian)])
     .then(function (res) {
+      conNames = res[2] ? res[2].constellations : [];
+      hawaiian = res[3] ? res[3].names : [];
+      if (!res[0] || !res[1]) throw new Error('chart data missing');
       stars = res[0].stars;
       lines = res[1].features.map(function (f) {
         return { id: f.id, lines: f.geometry.coordinates.map(function (ln) { return ln.map(function (p) { return [(p[0] + 360) % 360, p[1]]; }); }) };

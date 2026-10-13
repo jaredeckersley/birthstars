@@ -1,0 +1,173 @@
+{
+ "note": "Hawaiian star names from the Polynesian Voyaging Society (hokulea.com), which cites Johnson & Mahelona, Nā Inoa Hōkū. ʻOkina/kahakō follow modern Hawaiian orthography. NEEDS REVIEW by a native speaker / cultural practitioner before launch. Names whose spelling or identification was uncertain (e.g. Nānāhope/Pollux, Kauluakoko/Betelgeuse, Tahitian Piraʻetea/Deneb) and asterisms (Makaliʻi, Newe) were intentionally left out.",
+ "names": [
+  {
+   "hip": 69673,
+   "hawaiian": "Hōkūleʻa",
+   "english": "Arcturus",
+   "meaning": "Clear Star / Star of Gladness",
+   "ra_deg": 213.9154,
+   "dec_deg": 19.1824,
+   "sources": [
+    "https://worldwidevoyage.hokulea.com/education-at-sea/polynesian-navigation/polynesian-non-instrument-wayfinding/hawaiian-star-lines/",
+    "https://worldwidevoyage.hokulea.com/education-at-sea/polynesian-navigation/polynesian-non-instrument-wayfinding/holding-a-course/"
+   ]
+  },
+  {
+   "hip": 11767,
+   "hawaiian": "Hōkūpaʻa",
+   "english": "Polaris",
+   "meaning": "Fixed Star",
+   "ra_deg": 37.9462,
+   "dec_deg": 89.2641,
+   "sources": [
+    "https://worldwidevoyage.hokulea.com/education-at-sea/polynesian-navigation/polynesian-non-instrument-wayfinding/hawaiian-star-lines/",
+    "https://worldwidevoyage.hokulea.com/education-at-sea/polynesian-navigation/polynesian-non-instrument-wayfinding/holding-a-course/"
+   ]
+  },
+  {
+   "hip": 32349,
+   "hawaiian": "ʻAʻā",
+   "english": "Sirius",
+   "meaning": "Burning brightly",
+   "ra_deg": 101.2872,
+   "dec_deg": -16.7161,
+   "sources": [
+    "https://worldwidevoyage.hokulea.com/education-at-sea/polynesian-navigation/polynesian-non-instrument-wayfinding/hawaiian-star-lines/",
+    "https://worldwidevoyage.hokulea.com/education-at-sea/polynesian-navigation/polynesian-non-instrument-wayfinding/holding-a-course/"
+   ]
+  },
+  {
+   "hip": 24608,
+   "hawaiian": "Hōkūlei",
+   "english": "Capella",
+   "meaning": null,
+   "ra_deg": 79.1723,
+   "dec_deg": 45.998,
+   "sources": [
+    "https://worldwidevoyage.hokulea.com/education-at-sea/polynesian-navigation/polynesian-non-instrument-wayfinding/holding-a-course/"
+   ]
+  },
+  {
+   "hip": 91262,
+   "hawaiian": "Keoe",
+   "english": "Vega",
+   "meaning": null,
+   "ra_deg": 279.2346,
+   "dec_deg": 38.7837,
+   "sources": [
+    "https://worldwidevoyage.hokulea.com/education-at-sea/polynesian-navigation/polynesian-non-instrument-wayfinding/holding-a-course/"
+   ]
+  },
+  {
+   "hip": 21421,
+   "hawaiian": "Kapuahi",
+   "english": "Aldebaran",
+   "meaning": null,
+   "ra_deg": 68.9802,
+   "dec_deg": 16.5093,
+   "sources": [
+    "https://worldwidevoyage.hokulea.com/education-at-sea/polynesian-navigation/polynesian-non-instrument-wayfinding/holding-a-course/"
+   ]
+  },
+  {
+   "hip": 97649,
+   "hawaiian": "Humu",
+   "english": "Altair",
+   "meaning": null,
+   "ra_deg": 297.6958,
+   "dec_deg": 8.8683,
+   "sources": [
+    "https://worldwidevoyage.hokulea.com/education-at-sea/polynesian-navigation/polynesian-non-instrument-wayfinding/holding-a-course/"
+   ]
+  },
+  {
+   "hip": 37279,
+   "hawaiian": "Puana",
+   "english": "Procyon",
+   "meaning": null,
+   "ra_deg": 114.8255,
+   "dec_deg": 5.225,
+   "sources": [
+    "https://worldwidevoyage.hokulea.com/education-at-sea/polynesian-navigation/polynesian-non-instrument-wayfinding/holding-a-course/"
+   ]
+  },
+  {
+   "hip": 24436,
+   "hawaiian": "Puanakau",
+   "english": "Rigel",
+   "meaning": null,
+   "ra_deg": 78.6345,
+   "dec_deg": -8.2016,
+   "sources": [
+    "https://worldwidevoyage.hokulea.com/education-at-sea/polynesian-navigation/polynesian-non-instrument-wayfinding/holding-a-course/"
+   ]
+  },
+  {
+   "hip": 65474,
+   "hawaiian": "Hikianalia",
+   "english": "Spica",
+   "meaning": null,
+   "ra_deg": 201.2982,
+   "dec_deg": -11.1613,
+   "sources": [
+    "https://worldwidevoyage.hokulea.com/education-at-sea/polynesian-navigation/polynesian-non-instrument-wayfinding/holding-a-course/"
+   ]
+  },
+  {
+   "hip": 80763,
+   "hawaiian": "Lehuakona",
+   "english": "Antares",
+   "meaning": null,
+   "ra_deg": 247.3519,
+   "dec_deg": -26.432,
+   "sources": [
+    "https://worldwidevoyage.hokulea.com/education-at-sea/polynesian-navigation/polynesian-non-instrument-wayfinding/holding-a-course/"
+   ]
+  },
+  {
+   "hip": 30438,
+   "hawaiian": "Ke Aliʻi o Kona i ka Lewa",
+   "english": "Canopus",
+   "meaning": null,
+   "ra_deg": 95.9879,
+   "dec_deg": -52.6957,
+   "sources": [
+    "https://worldwidevoyage.hokulea.com/education-at-sea/polynesian-navigation/polynesian-non-instrument-wayfinding/holding-a-course/"
+   ]
+  },
+  {
+   "hip": 68702,
+   "hawaiian": "Kamailemua",
+   "english": "Hadar (Beta Centauri)",
+   "meaning": null,
+   "ra_deg": 210.9559,
+   "dec_deg": -60.373,
+   "sources": [
+    "https://worldwidevoyage.hokulea.com/education-at-sea/polynesian-navigation/polynesian-non-instrument-wayfinding/holding-a-course/"
+   ]
+  },
+  {
+   "hip": 71683,
+   "hawaiian": "Kamailehope",
+   "english": "Alpha Centauri",
+   "meaning": null,
+   "ra_deg": 219.9115,
+   "dec_deg": -60.834,
+   "sources": [
+    "https://worldwidevoyage.hokulea.com/education-at-sea/polynesian-navigation/polynesian-non-instrument-wayfinding/holding-a-course/"
+   ]
+  },
+  {
+   "hip": 60718,
+   "hawaiian": "Ka Mole Honua",
+   "english": "Acrux",
+   "meaning": null,
+   "ra_deg": 186.6497,
+   "dec_deg": -63.0991,
+   "sources": [
+    "https://worldwidevoyage.hokulea.com/education-at-sea/polynesian-navigation/polynesian-non-instrument-wayfinding/holding-a-course/"
+   ]
+  }
+ ]
+}

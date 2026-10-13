@@ -7,6 +7,7 @@
   <div class="reveal-burst" aria-hidden="true"><span class="burst-star"></span></div>
   <p class="reveal-kicker">Your Birthday Star is</p>
   <h1 id="star-name" class="star-name">{{ name }}</h1>
+  {% if hawaiian %}<p class="hawaiian-name">Hawaiian name: <strong lang="haw">{{ hawaiian.hawaiian }}</strong>{% if hawaiian.meaning %} <span class="hint">("{{ hawaiian.meaning }}")</span>{% endif %}</p>{% endif %}
   {% if designation != name %}<p class="designation">also called <strong>{{ designation }}</strong></p>{% endif %}
 </section>
 
@@ -63,6 +64,32 @@
   {% endif %}
 </section>
 
+<section class="photo card" aria-labelledby="photo-h">
+  <h2 id="photo-h">Your star, photographed by a real telescope</h2>
+  {% if photo %}
+  <figure class="photo-fig">
+    <div class="photo-frame">
+      <img src="{{ base }}/assets/survey/{{ photo.file }}" width="600" height="600" loading="lazy"
+           alt="Telescope photo of the sky around {{ name }}, which is in the centre of the circle.">
+      <svg class="photo-mark" viewBox="0 0 100 100" aria-hidden="true"><g class="photo-ring"><circle cx="50" cy="50" r="9"/><path d="M50 32v8M50 60v8M32 50h8M60 50h8"/></g></svg>
+      <span class="photo-label" aria-hidden="true">{{ name }}</span>
+    </div>
+    <figcaption>
+      <p>{{ name }} is in the middle of the circle. This patch of sky is <strong>{{ photo.fov_words }}</strong>.
+      {% if photo.pan_starrs %}It was taken by the <strong>Pan-STARRS</strong> telescope on top of <strong>Haleakalā, Maui</strong>, right here in Hawaiʻi!{% else %}It comes from the <strong>Digitized Sky Survey</strong>, made from big glass photographic plates taken by telescopes in California and Australia.{% endif %}</p>
+      {% if star.magnitude < 4 %}
+      <p class="hint">Why does it look like a big glowing blob? {{ name }} is so bright that its light floods the camera, spilling over and making spikes and halos. The star itself is really a tiny point!</p>
+      {% else %}
+      <p class="hint">Every dot is a star (and some fuzzy smudges are whole galaxies far beyond!). Bright stars look bigger only because their light spreads out in the camera.</p>
+      {% endif %}
+      <p class="credit">Image: {{ photo.credit }}. Field of view {{ photo.fov_deg }}°.</p>
+    </figcaption>
+  </figure>
+  {% else %}
+  <p class="photo-missing">We don't have a telescope photo of {{ name }} here yet, but you can find it on the sky chart below!</p>
+  {% endif %}
+</section>
+
 <section class="chart-wrap card" aria-labelledby="chart-h">
   <h2 id="chart-h">Find it in the sky</h2>
   <p class="hint noprint">Drag to look around, pinch or use the + and − buttons to zoom. Arrow keys work too.</p>
@@ -70,7 +97,7 @@
     <canvas id="skychart" class="skychart" tabindex="0" role="img"
       aria-label="Star chart centred on {{ name }} in {{ constellation ?: 'the sky' }}"
       data-ra="{{ (star.raHours * 15)|round(4) }}" data-dec="{{ star.decDeg|round(4) }}" data-name="{{ name }}"
-      data-stars="{{ base }}/assets/data/sky-stars.json" data-lines="{{ base }}/assets/data/constellations.lines.json"
+      data-stars="{{ base }}/assets/data/sky-stars.json" data-lines="{{ base }}/assets/data/constellations.lines.json" data-names="{{ base }}/assets/data/constellations.names.json" data-hawaiian="{{ base }}/assets/data/hawaiian-star-names.json"
       data-con="{{ star.constellation }}" data-con-name="{{ constellation }}" width="900" height="600"></canvas>
     <div class="chart-controls noprint">
       <button type="button" class="btn-round" data-zoom="in" aria-label="Zoom in">+</button>
