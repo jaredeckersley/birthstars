@@ -92,7 +92,7 @@
 
 <section class="chart-wrap card" aria-labelledby="chart-h">
   <h2 id="chart-h">Find it in the sky</h2>
-  <p class="hint noprint">Drag to look around. Pinch, use the mouse wheel, or the + and − buttons to zoom. Click the chart, then use the arrow keys to move around.</p>
+  <p class="hint noprint">Drag to look around. Pinch, use the mouse wheel, or the + and − buttons to zoom. On larger screens, use the arrow buttons or click the chart and press the arrow keys.</p>
   <div class="chart-box">
     <canvas id="skychart" class="skychart" tabindex="0" role="img"
       aria-label="Star chart centred on {{ name }} in {{ constellation ?: 'the sky' }}"
@@ -100,9 +100,17 @@
       data-stars="{{ base }}/assets/data/sky-stars.json" data-lines="{{ base }}/assets/data/constellations.lines.json" data-names="{{ base }}/assets/data/constellations.names.json" data-hawaiian="{{ base }}/assets/data/hawaiian-star-names.json"
       data-con="{{ star.constellation }}" data-con-name="{{ constellation }}" width="900" height="600"></canvas>
     <div class="chart-controls noprint">
-      <button type="button" class="btn-round" data-zoom="in" aria-label="Zoom in">+</button>
-      <button type="button" class="btn-round" data-zoom="out" aria-label="Zoom out">−</button>
-      <button type="button" class="btn-round" data-zoom="reset" aria-label="Centre on my star">◎</button>
+      <div class="chart-dpad" role="group" aria-label="Pan the sky chart">
+        <button type="button" class="btn-round" data-pan="up" aria-label="Pan up">↑</button>
+        <button type="button" class="btn-round" data-pan="left" aria-label="Pan left">←</button>
+        <button type="button" class="btn-round" data-pan="right" aria-label="Pan right">→</button>
+        <button type="button" class="btn-round" data-pan="down" aria-label="Pan down">↓</button>
+      </div>
+      <div class="chart-zoom">
+        <button type="button" class="btn-round" data-zoom="in" aria-label="Zoom in">+</button>
+        <button type="button" class="btn-round" data-zoom="out" aria-label="Zoom out">−</button>
+        <button type="button" class="btn-round" data-zoom="reset" aria-label="Centre on my star">◎</button>
+      </div>
     </div>
   </div>
   <p class="coords">Sky coordinates (J2000): RA {{ (star.raHours)|number_format(3) }} h, Dec {{ star.decDeg|number_format(2) }}°</p>

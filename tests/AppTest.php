@@ -60,8 +60,11 @@ final class AppTest extends TestCase
         self::assertStringContainsString('61 Cygni', $body);
         self::assertStringContainsString('Cygnus', $body);
         self::assertStringContainsString('id="skychart"', $body);
-        self::assertStringContainsString('Click the chart, then use the arrow keys', $body);
+        self::assertStringContainsString('use the arrow buttons', $body);
         self::assertMatchesRegularExpression('/id="skychart"[^>]*tabindex="0"/', $body);
+        self::assertStringContainsString('chart-dpad', $body);
+        self::assertStringContainsString('data-pan="left"', $body);
+        self::assertStringContainsString('aria-label="Pan left"', $body);
         self::assertStringContainsString('The light you see left it around when you were born', $body);
         self::assertStringContainsString('But the trip is about', $body);
         self::assertStringContainsString('trillion miles</strong> long!', $body);

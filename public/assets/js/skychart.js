@@ -165,6 +165,32 @@
       if (z === 'in') zoom(.8); else if (z === 'out') zoom(1.25); else { view = { ra: target.ra, dec: target.dec, fov: 70 }; redraw(); }
     });
   });
+  // On-screen D-pad: click once or press-and-hold to repeat (mirrors arrow-key pan amounts).
+  var panDirs = { left: [40, 0], right: [-40, 0], up: [0, 40], down: [0, -40] };
+  document.querySelectorAll('[data-pan]').forEach(function (b) {
+    var dir = panDirs[b.getAttribute('data-pan')];
+    if (!dir) return;
+    var holdTimer = null, holdIv = null;
+    function step() { pan(dir[0], dir[1]); }
+    function clearHold() {
+      if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; }
+      if (holdIv) { clearInterval(holdIv); holdIv = null; }
+    }
+    b.addEventListener('pointerdown', function (e) {
+      if (e.button != null && e.button !== 0) return;
+      e.preventDefault();
+      focusChart();
+      try { b.setPointerCapture(e.pointerId); } catch (err) {}
+      step();
+      clearHold();
+      holdTimer = setTimeout(function () { holdIv = setInterval(step, 70); }, 320);
+    });
+    ['pointerup', 'pointercancel', 'pointerleave', 'lostpointercapture'].forEach(function (ev) {
+      b.addEventListener(ev, clearHold);
+    });
+    // Avoid a duplicate click after pointerdown already stepped once.
+    b.addEventListener('click', function (e) { e.preventDefault(); });
+  });
   addEventListener('resize', function () { size(); redraw(); });
   addEventListener('beforeprint', function () { printing = true; view = { ra: target.ra, dec: target.dec, fov: 70 }; draw(performance.now()); });
   addEventListener('afterprint', function () { printing = false; if (!reduce) requestAnimationFrame(draw); else redraw(); });

@@ -87,7 +87,33 @@ h1 em, h2 em { color: var(--gold); font-style: normal; }
 .skychart { width: 100%; height: auto; aspect-ratio: 3 / 2; border-radius: 16px; background: #02040f; display: block; cursor: grab; touch-action: none; }
 .skychart:focus { outline: none; }
 .skychart:focus-visible { outline: 4px solid var(--focus); outline-offset: 3px; }
-.chart-controls { position: absolute; right: .8rem; bottom: .8rem; display: flex; gap: .5rem; }
+.chart-controls { position: absolute; right: .8rem; bottom: .8rem; display: flex; gap: .6rem; align-items: flex-end; }
+.chart-zoom { display: flex; gap: .5rem; }
+/* Compact D-pad: desktop + kiosk only (phones use drag) */
+.chart-dpad {
+  display: none;
+  grid-template-columns: repeat(3, 2.75rem);
+  grid-template-rows: repeat(3, 2.75rem);
+  gap: .2rem;
+  align-items: center;
+  justify-items: center;
+}
+.chart-dpad .btn-round { width: 2.75rem; height: 2.75rem; font-size: 1.15rem; line-height: 1; }
+.chart-dpad [data-pan="up"] { grid-column: 2; grid-row: 1; }
+.chart-dpad [data-pan="left"] { grid-column: 1; grid-row: 2; }
+.chart-dpad [data-pan="right"] { grid-column: 3; grid-row: 2; }
+.chart-dpad [data-pan="down"] { grid-column: 2; grid-row: 3; }
+@media (min-width: 700px) {
+  .chart-dpad { display: grid; }
+}
+.kiosk .chart-dpad { display: grid; }
+.kiosk .chart-dpad {
+  grid-template-columns: repeat(3, 3.4rem);
+  grid-template-rows: repeat(3, 3.4rem);
+  gap: .3rem;
+}
+.kiosk .chart-dpad .btn-round { width: 3.4rem; height: 3.4rem; font-size: 1.4rem; }
+.kiosk .chart-zoom .btn-round { width: 3.4rem; height: 3.4rem; font-size: 1.6rem; }
 .coords { color: var(--muted); font-size: .9rem; }
 .actions { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; margin: 2rem 0; }
 .inspire summary { cursor: pointer; font-size: 1.15rem; font-weight: 700; color: var(--cyan); }
