@@ -1,6 +1,6 @@
 # Birthday Stars · Hōkū Hānau
 
-Tell Birthday Stars when you were born, and it finds a star whose distance in light years matches your age. The light we see from that star today left it around the day you were born, and it has taken your whole life to reach Earth.
+Tell Birthday Stars when you were born, and it finds a star whose distance in light years matches your age. The light we see from that star today left it around when you were born, and it has taken your whole life to reach Earth.
 
 This version is a rewrite for **Journey Through the Universe**, Hawaiʻi Island. It's built for kids at a booth kiosk and for volunteers in classrooms.
 

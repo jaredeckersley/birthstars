@@ -12,7 +12,7 @@
 </section>
 
 <section class="explain card">
-  <h2>The light you see left it when you were born</h2>
+  <h2>The light you see left it around when you were born</h2>
   <p class="big-number"><span>{{ star.distanceLy|number_format(1) }}</span> light years away</p>
   {% if r.isTooYoungForAnyStar %}
   <p>You are {{ age_years|number_format(1) }} years old, and that's so young that no other star's light has had time to make the whole trip in your lifetime! {{ name }} is one of the closest stars of all. Its light set off <strong>{{ star.distanceLy|number_format(1) }} years</strong> ago, before you were born, and the light leaving it today will arrive in about {{ (star.distanceLy - age_years)|round(0, 'ceil') }} years. Come back then!</p>

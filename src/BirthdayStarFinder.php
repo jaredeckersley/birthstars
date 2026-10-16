@@ -6,7 +6,7 @@ namespace BirthStars;
 
 use DateTimeImmutable;
 
-/** Finds "your birthday star": the named star whose light set off when you were born. */
+/** Finds "your birthday star": the named star whose light set off around when you were born. */
 final class BirthdayStarFinder
 {
     public function __construct(
