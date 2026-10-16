@@ -83,8 +83,10 @@ h1 em, h2 em { color: var(--gold); font-style: normal; }
 .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1rem; animation: fadein .9s 3.2s both; }
 .fact { margin: 0; }
 .fact h3 { margin-top: 0; color: var(--pink); font-size: 1.3rem; }
-.chart-box { position: relative; }
+.chart-box { position: relative; overscroll-behavior: contain; }
 .skychart { width: 100%; height: auto; aspect-ratio: 3 / 2; border-radius: 16px; background: #02040f; display: block; cursor: grab; touch-action: none; }
+.skychart:focus { outline: none; }
+.skychart:focus-visible { outline: 4px solid var(--focus); outline-offset: 3px; }
 .chart-controls { position: absolute; right: .8rem; bottom: .8rem; display: flex; gap: .5rem; }
 .coords { color: var(--muted); font-size: .9rem; }
 .actions { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; margin: 2rem 0; }

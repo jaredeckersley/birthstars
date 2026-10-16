@@ -118,9 +118,21 @@
     redraw();
   }
 
+  // Keep the chart keyboard-focusable and grab focus on click/tap/drag so arrows
+  // and +/- zoom the view instead of scrolling the page.
+  if (!cv.hasAttribute('tabindex')) cv.setAttribute('tabindex', '0');
+  if (!cv.getAttribute('role')) cv.setAttribute('role', 'img');
+  function focusChart() {
+    try { cv.focus({ preventScroll: true }); } catch (err) { cv.focus(); }
+  }
   // Pointer: drag to pan, pinch to zoom
   var pts = {}, lastDist = 0;
-  cv.addEventListener('pointerdown', function (e) { cv.setPointerCapture(e.pointerId); pts[e.pointerId] = [e.clientX, e.clientY]; cv.style.cursor = 'grabbing'; });
+  cv.addEventListener('pointerdown', function (e) {
+    focusChart();
+    cv.setPointerCapture(e.pointerId);
+    pts[e.pointerId] = [e.clientX, e.clientY];
+    cv.style.cursor = 'grabbing';
+  });
   cv.addEventListener('pointermove', function (e) {
     if (!pts[e.pointerId]) return;
     var ids = Object.keys(pts);
@@ -133,12 +145,20 @@
   });
   function up(e) { delete pts[e.pointerId]; lastDist = 0; cv.style.cursor = 'grab'; }
   cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
-  cv.addEventListener('wheel', function (e) { e.preventDefault(); zoom(e.deltaY > 0 ? 1.1 : 0.9); }, { passive: false });
+  // passive:false (+ capture) so preventDefault stops page scroll (incl. kiosk)
+  cv.addEventListener('wheel', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    zoom(e.deltaY > 0 ? 1.1 : 0.9);
+  }, { passive: false, capture: true });
   cv.addEventListener('keydown', function (e) {
     var k = { ArrowLeft: [40, 0], ArrowRight: [-40, 0], ArrowUp: [0, 40], ArrowDown: [0, -40] }[e.key];
-    if (k) { pan(k[0], k[1]); e.preventDefault(); }
-    if (e.key === '+' || e.key === '=') zoom(.85); if (e.key === '-') zoom(1.18);
+    if (k) { pan(k[0], k[1]); e.preventDefault(); return; }
+    if (e.key === '+' || e.key === '=') { zoom(.85); e.preventDefault(); return; }
+    if (e.key === '-' || e.key === '_') { zoom(1.18); e.preventDefault(); }
   });
+  // Test hook: read-only view snapshot for Playwright checks (not used by the UI).
+  cv._chartView = function () { return { ra: view.ra, dec: view.dec, fov: view.fov }; };
   document.querySelectorAll('[data-zoom]').forEach(function (b) {
     b.addEventListener('click', function () {
       var z = b.getAttribute('data-zoom');
