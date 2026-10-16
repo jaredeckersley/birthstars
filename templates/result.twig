@@ -19,7 +19,7 @@
   {% else %}
   <p>You are about <strong>{{ age_years|number_format(1) }} years old</strong>. Light from {{ name }} takes about <strong>{{ star.distanceLy|number_format(1) }} years</strong> to reach Earth. So the starlight arriving in your eyes tonight <strong>set off around {{ r.lightLeftOn|date('F Y') }}</strong>, right around when you were born. It has been zooming through space your whole life!</p>
   {% endif %}
-  <p class="aside">Light is the fastest thing there is: {{ light_speed_miles|number_format }} miles every second. Even at that speed, the trip is about <strong>{{ (miles / 1e12)|number_format(0) }} trillion miles</strong> long.</p>
+  <p class="aside">Light is the fastest thing there is: {{ light_speed_miles|number_format }} miles every second. But the trip is about <strong>{{ (miles / 1e12)|number_format(0) }} trillion miles</strong> long!</p>
 </section>
 
 <section class="facts" aria-label="Fun facts">

@@ -37,7 +37,7 @@ final class AppTest extends TestCase
     {
         [$code, $body, $headers] = $this->get('/');
         self::assertSame(200, $code);
-        self::assertStringContainsString('Which star was born', $body);
+        self::assertStringContainsString('What&#39;s your birthday star right now?', $body);
         self::assertStringContainsString('lang="haw">Hōkū Hānau<', $body);
         self::assertStringContainsString("default-src 'self'", $headers['Content-Security-Policy'][0]);
         self::assertStringNotContainsString('data-kiosk-home', $body);
@@ -58,6 +58,9 @@ final class AppTest extends TestCase
         self::assertStringContainsString('61 Cygni', $body);
         self::assertStringContainsString('Cygnus', $body);
         self::assertStringContainsString('id="skychart"', $body);
+        self::assertStringContainsString('But the trip is about', $body);
+        self::assertStringContainsString('trillion miles</strong> long!', $body);
+        self::assertStringNotContainsString('Even at that speed', $body);
     }
 
     public function testInvalidInputIsRejectedAndEscaped(): void
