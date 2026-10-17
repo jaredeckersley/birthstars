@@ -87,7 +87,7 @@ h1 em, h2 em { color: var(--gold); font-style: normal; }
 .skychart { width: 100%; height: auto; aspect-ratio: 3 / 2; border-radius: 16px; background: #02040f; display: block; cursor: grab; touch-action: none; }
 .skychart:focus { outline: none; }
 .skychart:focus-visible { outline: 4px solid var(--focus); outline-offset: 3px; }
-.chart-controls { position: absolute; right: .8rem; bottom: .8rem; display: flex; gap: .6rem; align-items: flex-end; }
+.chart-controls { position: absolute; right: .8rem; bottom: .8rem; display: flex; flex-direction: column; gap: .55rem; align-items: center; }
 .chart-zoom { display: flex; gap: .5rem; }
 /* Compact D-pad: desktop + kiosk only (phones use drag) */
 .chart-dpad {
